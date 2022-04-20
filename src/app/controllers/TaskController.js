@@ -31,6 +31,40 @@ class TaskController {
 
     return res.json(tasks);
   }
+
+  // Alterando o status da Task para TRUE
+  async update(req, res) {
+    const { task_id } = req.params;
+
+    const task = await Task.findByPk(task_id);
+
+    if (!task) {
+      return res.status(400).json({ error: 'Task not found' });
+    }
+
+    await task.update(req.body);
+
+    return res.json(task);
+  }
+
+  // Deletando uma TASK
+  async delete(req, res) {
+    const { task_id } = req.params;
+
+    const task = await Task.findByPk(task_id);
+
+    if (!task) {
+      return res.status(400).json({ error: 'Task not found' });
+    }
+
+    if (task.user_id !== req.userId) {
+      return res.status(401).json({ error: 'Operation not permitted' });
+    }
+
+    await task.destroy();
+
+    return res.send();
+  }
 }
 
 export default new TaskController();
